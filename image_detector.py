@@ -6,12 +6,6 @@ import numpy as np
 import pyautogui
 import os
 
-GOBBY_IMAGES = os.listdir("./images/monsters/black_gobby/")
-WHEAT_IMAGES = os.listdir("./images/plants/")
-
-
-ATTACK = "./images/actions/attack.png"
-
 
 class ImageDetector:
     def __init__(self):

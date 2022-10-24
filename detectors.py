@@ -5,7 +5,6 @@ from utils import (
     FarmerDetector,
     GlobalDetector,
     CombatDetector,
-    IndicatorsDetector,
     MoonIslandDetector,
     CharacterDetector,
 )
@@ -20,21 +19,30 @@ REAP = ACTIONS + "reap.png"
 # Fight / Confirmations
 CLOSE_FIGHT = ACTIONS + "close_fight.png"
 LVL_UP = ACTIONS + "lvl_up_confirm.png"
-AM_I_IN_FIGHT = "./images/indicators/in_fight_indicator.png"
+AM_I_IN_FIGHT = "./images/character/sadi_on_fight_bar.png"
 ATTACK = "./images/actions/attack.png"
 READY_FIGHT = "./images/actions/ready_fight.png"
+PAUSE = "./images/actions/pause.png"
+
 
 # Monsters
 AMBUSH = "./images/monsters/moon_island/ambush.png"
 GREEN_SMALL_TURTLE = "./images/monsters/moon_island/green_small_turtle.png"
 BAMBOO_RIGHT = "./images/monsters/moon_island/bamboo_right.png"
+BAMBOO_1 = "./images/monsters/moon_island/bamboo1.png"
+BAMBOO_2 = "./images/monsters/moon_island/bamboo2.png"
+TURTLE = "./images/monsters/moon_island/tourtle.png"
+
 BAMBOO_LEFT = "./images/monsters/moon_island/bamboo_left.png"
 SMALL_BAMBOO_RIGHT = "./images/monsters/moon_island/small_bambo_right.png"
 SMALL_BAMBOO_LEFT = "./images/monsters/moon_island/small_bambo_left.png"
 COCONUT = "./images/monsters/moon_island/coconut.png"
 
 # Characters
-SADI_TOOLTIP = "./images/character/sadi_tooltip.png"
+# SADI_TOOLTIP = "./images/character/sadi_tooltip.png"
+SADI_TOOLTIP = "./images/character/sadi_on_fight_bar.png"
+AM_I_TREE = "./images/character/tree.png"
+AM_I_TREE2 = "./images/character/tree2.png"
 
 # Character Skills
 EARTHQUAKE = "./images/character/skills/earthquake.png"
@@ -50,11 +58,12 @@ THRESHOLDS = {
         "CLOSE_FIGHT": 0.90,
         "LVL_UP": 0.90,
         "READY_FIGHT": 0.90,
+        "PAUSE": 0.90,
     },
-    "INDICATORS": {"AM_I_IN_FIGHT": 0.95},
+    "INDICATORS": {"AM_I_IN_FIGHT": 0.90},
     "PLANTS": {"WHEAT": 0.40},
-    "MONSTERS": {"ALL": 0.50},
-    "CHARACTER": {"ARTWORK": 0.90, "SKILLS": 0.90},
+    "MONSTERS": {"ALL": 0.75},
+    "CHARACTER": {"ARTWORK": 0.90, "SKILLS": 0.90, "AM_I_TREE": 0.75},
 }
 
 
@@ -68,18 +77,6 @@ def _initialize_global_detectors():
     }
 
 
-# Initialize Detectors
-def initialize_farming_detectors():
-    """
-    FARM DETECTORS
-    """
-    global_detectors = _initialize_global_detectors()
-    return {
-        FarmerDetector.WHEAT: FarmDetectors.get_wheat_detector(),
-        FarmerDetector.REAP: FarmDetectors.get_reap_detector(),
-    } | global_detectors
-
-
 def initialize_fight_detectors():
     """
     COMBAT DETECTORS
@@ -89,6 +86,7 @@ def initialize_fight_detectors():
         CombatDetector.CONFIRM_ATTACK: FightDetectors.confirm_attack(),
         CombatDetector.CONFIRM_READY: FightDetectors.confirm_ready(),
         CombatDetector.AM_I_IN_FIGHT: FightDetectors.am_i_in_fight_detector(),
+        CombatDetector.PAUSE: FightDetectors.pause(),
     } | global_detectors
 
 
@@ -103,11 +101,16 @@ def initialize_moon_island_mobs_detectors():
         MoonIslandDetector.GREEN_SMALL_TURTLE: MoonIslandMobsDetectors.green_small_turtle_detector(),
         MoonIslandDetector.BAMBOO_RIGHT: MoonIslandMobsDetectors.bamboo_right_detector(),
         MoonIslandDetector.BAMBOO_LEFT: MoonIslandMobsDetectors.bamboo_left_detector(),
+        MoonIslandDetector.BAMBOO_1: MoonIslandMobsDetectors.bamboo_1_detector(),
+        MoonIslandDetector.BAMBOO_2: MoonIslandMobsDetectors.bamboo_2_detector(),
+        MoonIslandDetector.TURTLE: MoonIslandMobsDetectors.turtle_detector(),
         MoonIslandDetector.SMALL_BAMBOO_RIGHT: MoonIslandMobsDetectors.small_bamboo_right_detector(),
         MoonIslandDetector.SMALL_BAMBOO_LEFT: MoonIslandMobsDetectors.small_bamboo_left_detector(),
         MoonIslandDetector.COCONUT: MoonIslandMobsDetectors.coconut_detector(),
         # Characters Detectors
         CharacterDetector.TOOLTIP: CharacterDetectors.artwork_detector(),
+        CharacterDetector.AM_I_TREE: CharacterDetectors.am_i_tree_detector(),
+        CharacterDetector.AM_I_TREE2: CharacterDetectors.am_i_tree2_detector(),
         CharacterDetector.EARTHQUAKE: CharacterDetectors.earthquake_detector(),
         CharacterDetector.POISONED_WIND: CharacterDetectors.poisoned_wind_detector(),
         CharacterDetector.SOUL_CAPTURE: CharacterDetectors.soul_capture_detector(),
@@ -183,6 +186,15 @@ class FightDetectors:
             threshold=THRESHOLDS["ACTIONS"]["ATTACK"],
         )
 
+    @staticmethod
+    def pause():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=PAUSE,
+            threshold=THRESHOLDS["ACTIONS"]["PAUSE"],
+        )
+
 
 class MoonIslandMobsDetectors:
     @staticmethod
@@ -222,6 +234,33 @@ class MoonIslandMobsDetectors:
         )
 
     @staticmethod
+    def bamboo_1_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=BAMBOO_1,
+            threshold=THRESHOLDS["MONSTERS"]["ALL"],
+        )
+
+    @staticmethod
+    def bamboo_2_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=BAMBOO_2,
+            threshold=THRESHOLDS["MONSTERS"]["ALL"],
+        )
+
+    @staticmethod
+    def turtle_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=TURTLE,
+            threshold=THRESHOLDS["MONSTERS"]["ALL"],
+        )
+
+    @staticmethod
     def small_bamboo_left_detector():
         image_detector = ImageDetector()
         return Detection(
@@ -257,6 +296,24 @@ class CharacterDetectors:
             image_detector=image_detector,
             lookup_path=SADI_TOOLTIP,
             threshold=THRESHOLDS["CHARACTER"]["ARTWORK"],
+        )
+
+    @staticmethod
+    def am_i_tree_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=AM_I_TREE,
+            threshold=THRESHOLDS["CHARACTER"]["AM_I_TREE"],
+        )
+
+    @staticmethod
+    def am_i_tree2_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=AM_I_TREE2,
+            threshold=THRESHOLDS["CHARACTER"]["AM_I_TREE"],
         )
 
     @staticmethod

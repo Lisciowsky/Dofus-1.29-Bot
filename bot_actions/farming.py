@@ -1,11 +1,7 @@
-from bot import DofusBot
 from utils import FarmerDetector, BotState, BotModes
 
 
 class FarmingActions:
-
-    bot: DofusBot
-
     @staticmethod
     def farming(bot) -> bool:
         wheat_detector: Detection = bot.targets[BotModes.FARMING].get(

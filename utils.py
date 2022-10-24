@@ -8,20 +8,24 @@ class MoonIslandDetector(Enum):
     GREEN_SMALL_TURTLE = "GREEN_SMALL_TURTLE"
     BAMBOO_RIGHT = "BAMBOO_RIGHT"
     BAMBOO_LEFT = "BAMBOO_LEFT"
+    BAMBOO_1 = "BAMBOO_1"
+    BAMBOO_2 = "BAMBOO_2"
+    TURTLE = "TURTLE"
     SMALL_BAMBOO_RIGHT = "SMALL_BAMBOO_RIGHT"
     SMALL_BAMBOO_LEFT = "SMALL_BAMBOO_LEFT"
     COCONUT = "COCONUT"
 
 
-class CharacterSkills(Enum):
+class CharacterDetector(Enum):
+    TOOLTIP = "TOOLTIP"
+    AM_I_TREE = "AM_I_TREE"
+    AM_I_TREE2 = "AM_I_TREE2"
+
+    # Skills
     EARTHQUAKE = "EARTHQUAKE"
     POISONED_WIND = "POISONED_WIND"
     SOUL_CAPTURE = "SOUL_CAPTURE"
     TREE_SKILL = "TREE_SKILL"
-
-
-class CharacterDetector(CharacterSkills):
-    TOOLTIP = "TOOLTIP"
 
 
 class FarmerDetector(Enum):
@@ -33,12 +37,13 @@ class CombatDetector(Enum):
     PERFORM_ATTACK = "PERFORM_ATTACK"
     CONFIRM_ATTACK = "CONFIRM_ATTACK"
     CONFIRM_READY = "CONFIRM_READY"
+    AM_I_IN_FIGHT = "AM_I_IN_FIGHT"
+    PAUSE = "PAUSE"
 
 
 class GlobalDetector(Enum):
     CLOSE_FIGHT = "CLOSE_FIGHT"
     LVL_UP = "LVL_UP"
-    AM_I_IN_FIGHT = "AM_I_IN_FIGHT"
 
 
 class BotModes(Enum):

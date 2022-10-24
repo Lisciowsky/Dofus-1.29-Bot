@@ -23,7 +23,7 @@ for detector in fight_detectors.values():
     detector.start()
 
 # Bot instance
-dofus_bot = DofusBot(mode=BotModes.FARMING)
+dofus_bot = DofusBot(mode=BotModes.FIGHTING)
 dofus_bot.start()
 
 # Sleep to change the windows to Dofus

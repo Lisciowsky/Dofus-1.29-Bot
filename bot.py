@@ -18,6 +18,7 @@ from utils import (
     PyutilMixns,
     GlobalDetector,
     CombatDetector,
+    CharacterDetector,
 )
 
 # Every Run Global Indicators
@@ -55,57 +56,158 @@ class DofusBot:
 
     @staticmethod
     def move_and_click(x, y):
-        PyutilMixns.move(x, y, h_plus=30.0, w_plus=50.0, duration=0.2)
-        sleep(0.2)
-        PyutilMixns.click(x, y, h_plus=30.0, w_plus=40.0)
+        PyutilMixns.move(x, y, h_plus=0.0, w_plus=0.0, duration=0.3)
+        sleep(0.5)
+        PyutilMixns.click(x, y, h_plus=0.0, w_plus=0.0)
 
     @staticmethod
     def _get_x_y_from_rectangle(rectangle):
-        x = rectangle[0][0]
-        y = rectangle[0][1]
+        t_h = rectangle[0][2] / 2 / 2
+        t_w = rectangle[0][3] / 2 / 2
+        x = rectangle[0][0] + t_h
+        y = rectangle[0][1] + t_w
         return x, y
 
-    def must_check_for_every_mode(self, fn):
-        """
-        Decorator for must checks before each bot run.
-        """
-        lvl_up_success = BeforeEachRun.lvl_up(self)
-        if lvl_up_success:
-            return True
-        closing_fight_success = BeforeEachRun.closing_fight(self)
-        if closing_fight_success:
-            return True
-
-        def inner(*args, **kwargs):
-            fn(*args, **kwargs)
-
-        return inner
-
-    @must_check_for_every_mode
-    def is_farming(self):
-        reaping_success = FarmingActions.reaping(self)
-        if reaping_success:
-            return True
-        farming_success = FarmingActions.farming(self)
-        if farming_success:
-            return True
+    def handle_in_fight_tree_sequence(self) -> bool:
+        if FightingActions.am_i_tree(self) or FightingActions.am_i_tree2(self):
+            print("am i tree ?")
+            if FightingActions.confirm_pause(self):
+                print("Confirming I am tree")
+                return True
 
         return False
 
-    @must_check_for_every_mode
+    def handle_sadida_skill_sequence(self):
+        yes = False
+        sleep(1.5)
+
+        casted_spells = {
+            "soul_capture_click": False,
+            "earthquake_click": False,
+            "poisoned_wind_click": False,
+            "tree_skill": False,
+        }
+
+        if DMGSadidaFightActions.soul_capture_click(self):
+            yes = DMGSadidaFightActions.tooltip(self)
+            casted_spells["soul_capture_click"] = True
+        if (
+            DMGSadidaFightActions.earthquake_click(self)
+            and casted_spells["soul_capture_click"]
+        ):
+            yes = DMGSadidaFightActions.tooltip(self)
+            casted_spells["earthquake_click"] = True
+        if (
+            DMGSadidaFightActions.poisoned_wind_click(self)
+            and casted_spells["soul_capture_click"]
+            and casted_spells["earthquake_click"]
+        ):
+            yes = DMGSadidaFightActions.tooltip(self)
+            casted_spells["poisoned_wind_click"] = True
+        if (
+            DMGSadidaFightActions.tree_skill(self)
+            and casted_spells["soul_capture_click"]
+            and casted_spells["earthquake_click"]
+            and casted_spells["poisoned_wind_click"]
+        ):
+            yes = DMGSadidaFightActions.tooltip(self)
+            casted_spells["tree_skill"] = True
+
+        if yes:
+            FightingActions.confirm_pause(self)
+
     def is_fighting(self):
-        # TOOD
+        # Put the mouse avay
+
+        if self.targets is None:
+            print("waiting for targets, sleeping for 2")
+            sleep(2)
+            return True
+        # DEFAULT DEFAULT DEFAULT DEFAULT DEFAULT
+        # We do make it to make sure we won't experience any pop-up windows from game.
+        pyautogui.moveTo(x=1650, y=15)
+        sleep(0.5)
+
+        lvl_up_success = BeforeEachRun.lvl_up(self)
+        if lvl_up_success:
+            self.state = BotState.SEARCHING
+            return True
+        closing_fight_success = BeforeEachRun.closing_fight(self)
+        if closing_fight_success:
+            self.state = BotState.SEARCHING
+            return True
+        confirm_ready_success = FightingActions.confirm_ready(self)
+        if confirm_ready_success:
+            return True
+
+        if FightingActions.am_i_in_fight(self):
+            self.state = BotState.FIGHTING
+        # DEFAULT DEFAULT DEFAULT DEFAULT DEFAULT
 
         if self.state == BotState.FIGHTING:
-            DMGSadidaFightActions
+            print("Fighting ...")
+            if FightingActions.confirm_ready(self):
+                return True
+            if self.handle_in_fight_tree_sequence():
+                FightingActions.confirm_pause(self)
+                return True
+            if self.handle_sadida_skill_sequence():
+                return True
 
-        else:
-            if MoonIslandActions.ambush_monster_click(bot):
-                # click attack
-                return True
-            if MoonIslandActions.ambush_monster_click(bot):
-                return True
-            
+            return False
+
+        if self.state == BotState.SEARCHING:
+            print("Searching...")
+            if MoonIslandActions.ambush_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    return True
+            if MoonIslandActions.bamboo_left_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.bamboo_right_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.coconut_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.green_small_turtle_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.small_bamboo_left_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.small_bamboo_right_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.bamboo_1_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.bamboo_2_monster_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+            if MoonIslandActions.turtle_click(self):
+                sleep(3)
+                if FightingActions.confirm_attack(self):
+                    if DMGSadidaFightActions.tooltip(self):
+                        return True
+
             return False
 
         return False
@@ -131,34 +233,19 @@ class DofusBot:
     def run(self):
         print(f"Starting Bot instance at {datetime.now().isoformat()}")
         while not self.stopped:
+            if self.targets is None:
+                sleep(1.5)
+
             if self.state == BotState.INITIALIZING:
                 if time() > self.timestamp + self.INITIALIZING_SECONDS:
                     print("Initialization Passed")
 
-            # INDICATORS INDICATORS INDICATORS INDICATORS
-            if self.am_i_in_fight():
-                self.lock.acquire()
-                self.state = BotState.FIGHTING
-                self.lock.release()
-            else:
-                self.lock.acquire()
-                self.state = BotState.SEARCHING
-                self.lock.release()
-
-            # FARMING FARMING FARMING FARMING
-            if self.mode == BotModes.FARMING:
-                success = self.is_farming()
-
-                if not success:
-                    success = self.is_farming()
-
-                if success:
                     self.lock.acquire()
-                    self.state = BotState.FARMING
+                    self.state = BotState.SEARCHING
                     self.lock.release()
 
             # FIGHTING FIGHTING FIGHTING FIGHTING
-            elif self.mode == BotModes.FIGHTING:
+            if self.mode == BotModes.FIGHTING:
                 success = self.is_fighting()
 
                 if not success:
@@ -167,4 +254,8 @@ class DofusBot:
                 if success:
                     self.lock.acquire()
                     self.state = BotState.FIGHTING
+                    self.lock.release()
+                else:
+                    self.lock.acquire()
+                    self.state = BotState.SEARCHING
                     self.lock.release()
