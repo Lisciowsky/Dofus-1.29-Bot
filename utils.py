@@ -3,6 +3,27 @@ from enum import Enum
 import pyautogui
 
 
+class MoonIslandDetector(Enum):
+    AMBUSH = "AMBUSH"
+    GREEN_SMALL_TURTLE = "GREEN_SMALL_TURTLE"
+    BAMBOO_RIGHT = "BAMBOO_RIGHT"
+    BAMBOO_LEFT = "BAMBOO_LEFT"
+    SMALL_BAMBOO_RIGHT = "SMALL_BAMBOO_RIGHT"
+    SMALL_BAMBOO_LEFT = "SMALL_BAMBOO_LEFT"
+    COCONUT = "COCONUT"
+
+
+class CharacterSkills(Enum):
+    EARTHQUAKE = "EARTHQUAKE"
+    POISONED_WIND = "POISONED_WIND"
+    SOUL_CAPTURE = "SOUL_CAPTURE"
+    TREE_SKILL = "TREE_SKILL"
+
+
+class CharacterDetector(CharacterSkills):
+    TOOLTIP = "TOOLTIP"
+
+
 class FarmerDetector(Enum):
     WHEAT = "WHEAT"
     REAP = "REAP"

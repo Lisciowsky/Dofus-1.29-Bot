@@ -1,10 +1,16 @@
+# Python Standard
 from typing import List
-import cv2 as cv
-import pyautogui
 from time import sleep, time
 from datetime import datetime
 from threading import Thread, Lock
 from enum import Enum
+
+# Third Party
+import cv2 as cv
+import pyautogui
+
+# Local
+from detection import Detection
 from utils import (
     BotModes,
     BotState,
@@ -13,7 +19,15 @@ from utils import (
     GlobalDetector,
     CombatDetector,
 )
-from detection import Detection
+
+# Every Run Global Indicators
+from bot_actions.before_each_run import BeforeEachRun
+
+# Specific Indicators
+from bot_actions.farming import FarmingActions
+from bot_actions.fighting import FightingActions
+from bot_actions.moon_island import MoonIslandActions
+from bot_actions.sadida_fight_sequence import DMGSadidaFightActions
 
 
 class DofusBot:
@@ -55,10 +69,10 @@ class DofusBot:
         """
         Decorator for must checks before each bot run.
         """
-        lvl_up_success = self.lvl_up()
+        lvl_up_success = BeforeEachRun.lvl_up(self)
         if lvl_up_success:
             return True
-        closing_fight_success = self.closing_fight()
+        closing_fight_success = BeforeEachRun.closing_fight(self)
         if closing_fight_success:
             return True
 
@@ -67,131 +81,12 @@ class DofusBot:
 
         return inner
 
-    """ FARMING """
-
-    def farming(self) -> bool:
-        wheat_detector: Detection = self.targets[BotModes.FARMING].get(
-            FarmerDetector.WHEAT
-        )
-        if len(wheat_detector.rectangles) > 0:
-            rectangle = wheat_detector.rectangles[:1]
-            print("FARMER: detected wheat")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            print("FARMER: wheat ... sleaping for 2.5")
-            sleep(2.5)
-            return True
-
-        return False
-
-    def reaping(self) -> bool:
-        reap_detector: Detection = self.targets[BotModes.FARMING].get(
-            FarmerDetector.REAP
-        )
-        if len(reap_detector.rectangles) > 0:
-            rectangle = reap_detector.rectangles[:1]
-            print("FARMER: detected reap")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            print("FARMER: reaping ... sleeping for 16")
-            sleep(16)
-            return True
-
-        return False
-
-    """ FARMING """
-
-    """ FIGHTING """
-
-    def attack_monster(self):
-        atack_monster_detector: Detection = self.targets[BotModes.FIGHTING].get(
-            CombatDetector.PERFORM_ATTACK
-        )
-        if len(atack_monster_detector.rectangles) > 0:
-            rectangle = atack_monster_detector.rectangles[:1]
-            print("FIGHT: attack monster")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            return True
-
-        return False
-
-    def confirm_attack(self):
-        confirm_attack_detector: Detection = self.targets[BotModes.FIGHTING].get(
-            CombatDetector.CONFIRM_ATTACK
-        )
-        if len(confirm_attack_detector.rectangles) > 0:
-            rectangle = confirm_attack_detector.rectangles[:1]
-            print("FIGHT: confirm attack")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            return True
-
-        return False
-
-    def confirm_ready(self):
-        confirm_ready_detector: Detection = self.targets[BotModes.FIGHTING].get(
-            CombatDetector.CONFIRM_READY
-        )
-        if len(confirm_ready_detector.rectangles) > 0:
-            rectangle = confirm_ready_detector.rectangles[:1]
-            print("FIGHT: confirm ready")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            return True
-
-        return False
-
-    """ FIGHTING """
-
-    """ BEFORE EACH RUN """
-
-    def closing_fight(self) -> bool:
-        closing_fight_detector: Detection = self.targets[BotModes.FARMING].get(
-            GlobalDetector.CLOSE_FIGHT
-        )
-        if len(closing_fight_detector.rectangles) > 0:
-            rectangle = closing_fight_detector.rectangles[:1]
-            print("FIGHT: detected closing fight")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            return True
-
-        return False
-
-    def lvl_up(self) -> bool:
-        lvl_up_detector: Detection = self.targets[BotModes.FARMING].get(
-            GlobalDetector.LVL_UP
-        )
-        if len(lvl_up_detector.rectangles) > 0:
-            rectangle = lvl_up_detector.rectangles[:1]
-            print("FIGHT detected lvl up confirmation")
-            x, y = self._get_x_y_from_rectangle(rectangle=rectangle)
-            self.move_and_click(x, y)
-            return True
-
-        return False
-
-    def am_i_in_fight(self) -> bool:
-        am_i_in_fight_detector: Detection = self.targets[BotModes.FIGHTING].get(
-            GlobalDetector.AM_I_IN_FIGHT
-        )
-        if len(am_i_in_fight_detector.rectangles) > 0:
-            rectangle = am_i_in_fight_detector.rectangles[:1]
-            if rectangle:
-                self.state = BotState.FIGHTING
-                return True
-
-        return False
-
-    """ BEFORE EACH RUN """
-
     @must_check_for_every_mode
     def is_farming(self):
-        reaping_success = self.reaping()
+        reaping_success = FarmingActions.reaping(self)
         if reaping_success:
             return True
-        farming_success = self.farming()
+        farming_success = FarmingActions.farming(self)
         if farming_success:
             return True
 
@@ -200,43 +95,20 @@ class DofusBot:
     @must_check_for_every_mode
     def is_fighting(self):
         # TOOD
-        
-        reaping_success = self.reaping()
-        if reaping_success:
-            return True
-        farming_success = self.farming()
-        if farming_success:
-            return True
+
+        if self.state == BotState.FIGHTING:
+            DMGSadidaFightActions
+
+        else:
+            if MoonIslandActions.ambush_monster_click(bot):
+                # click attack
+                return True
+            if MoonIslandActions.ambush_monster_click(bot):
+                return True
+            
+            return False
 
         return False
-
-    # def click_next_target(self):
-    #     """
-    #     filtered_targets key:
-    #      - BotModes.Farming
-    #     filtered_targets value:
-    #      - farming_detectors
-    #     """
-
-    #     """ MODES """
-    #     if self.state == BotState.FARMING:
-    #         return True if self.is_farming() else False
-
-    #     if self.state == BotState.FIGHTING:
-    #         return True if self.is_fighting() else False
-    #     """ MODES """
-
-    #     # attack_monster = self.attack_monster()
-    #     # if attack_monster:
-    #     #     return True
-    #     # confirm_attack = self.confirm_attack()
-    #     # if confirm_attack:
-    #     #     return True
-    #     # confirm_ready = self.confirm_ready()
-    #     # if confirm_ready:
-    #     #     return True
-
-    #     return False
 
     def update_targets(self, targets):
         self.lock.acquire()
