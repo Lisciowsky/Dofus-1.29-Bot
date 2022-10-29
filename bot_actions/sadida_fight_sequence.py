@@ -1,5 +1,11 @@
+# Python Standard
+import random
 from time import sleep
+
+# Local
 from utils import BotModes, BotState, CharacterDetector
+
+# Third Party
 import pyautogui
 
 
@@ -13,8 +19,6 @@ class DMGSadidaFightActions:
             print(f"SADIDA FIGHT: {skill_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(x, y)
-
-            # TODO add clicking to tooltip as fixed Width and Height
 
             return True
 
@@ -71,7 +75,7 @@ class DMGSadidaFightActions:
             print(f"SADIDA FIGHT: {action_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(x, y)
-            sleep(2.0)
+            sleep(random.randint(40, 150) / 100)
             return True
 
         return False

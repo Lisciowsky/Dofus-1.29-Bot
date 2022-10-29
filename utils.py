@@ -12,7 +12,6 @@ class MoonIslandDetector(Enum):
     BAMBOO_2 = "BAMBOO_2"
     TURTLE = "TURTLE"
     SMALL_BAMBOO_RIGHT = "SMALL_BAMBOO_RIGHT"
-    SMALL_BAMBOO_LEFT = "SMALL_BAMBOO_LEFT"
     COCONUT = "COCONUT"
 
 
@@ -44,6 +43,8 @@ class CombatDetector(Enum):
 class GlobalDetector(Enum):
     CLOSE_FIGHT = "CLOSE_FIGHT"
     LVL_UP = "LVL_UP"
+    INVENTORY = "INVENTORY"
+    SOUL = "SOUL"
 
 
 class BotModes(Enum):

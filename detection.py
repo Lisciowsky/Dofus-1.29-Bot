@@ -1,5 +1,6 @@
 # detection.py
 # Python Standard
+import time
 from threading import Thread, Lock
 
 # Third Party
@@ -17,8 +18,6 @@ class Detection:
     rectangles = []
     # properties
     screenshot = None
-    t_w = None
-    t_h = None
 
     def __init__(
         self, image_detector: ImageDetector, lookup_path: str, threshold: float
@@ -39,25 +38,31 @@ class Detection:
         t = Thread(target=self.run)
         t.start()
 
-    def stop(self):
+    def pause(self):
+        print(f"Detector: PAUSING {self.lookup_path.split('/')[-1]}")
         self.stopped = True
+
+    def unpause(self):
+        print(f"Detector: UNPAUSING {self.lookup_path.split('/')[-1]}")
+        self.stopped = False
 
     def run(self):
         print(
             f"Running detector for: {self.lookup_path} with threashold: {self.threshold}"
         )
-        while not self.stopped:
-            if not self.screenshot is None and self.lookup_path:
-                # do object detection
-                rectangles, _ = self.image_detector.detect_rectangles(
-                    self.screenshot,
-                    file_path=self.lookup_path,
-                    threshold=self.threshold,
-                )
-                # lock the thread while updating the results
-                self.lock.acquire()
-                self.rectangles = rectangles
-                self.t_w = self.image_detector.t_w
-                self.t_h = self.image_detector.t_h
-
-                self.lock.release()
+        while True:
+            if not self.stopped:
+                if not self.screenshot is None and self.lookup_path:
+                    # do object detection
+                    # print(f"analyzing: {self.lookup_path.split('/')[-1]}")
+                    rectangles, _ = self.image_detector.detect_rectangles(
+                        self.screenshot,
+                        file_path=self.lookup_path,
+                        threshold=self.threshold,
+                    )
+                    # lock the thread while updating the results
+                    self.lock.acquire()
+                    self.rectangles = rectangles
+                    self.lock.release()
+            else:
+                time.sleep(2.0)

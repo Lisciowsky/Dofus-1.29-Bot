@@ -44,6 +44,7 @@ if __name__ == "__main__":
 
         dofus_bot.update_screenshot(screenshot=screenshot)
         dofus_bot.update_targets(targets=targets)
+        dofus_bot.update_detectors(detectors=fight_detectors)
 
         key = cv2.waitKey(1)
         if key == ord("q"):

@@ -1,12 +1,24 @@
+# Python Standard
+import random
+from time import sleep
+
+# Local
 from utils import MoonIslandDetector, BotState, BotModes
 
 # adding pixels to X = "->>>" & adding pixels to Y = "UP"
 ADD_PIXELS = {
     "bamboo_left_monster_click": {"x": 25.0, "y": 0.0},
     "coconut_monster_click": {"x": 25.0, "y": 0.0},
-    "small_bamboo_left_monster_click": {"x": 10.0, "y": 0.0},
     "big_bamboo_1_and_2": {"x": 20.0, "y": 0.0},
+    "turtle": {"x": 10.0, "y": 0.0},
 }
+
+
+def random_sleep():
+    """
+    Sleep for random time between casting the spells.
+    """
+    sleep(random.randint(120, 200) / 100)
 
 
 class MoonIslandActions:
@@ -19,6 +31,7 @@ class MoonIslandActions:
             print(f"MOON MONSTERS: {monster_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(x, y)
+            random_sleep()
             return True
 
         return False
@@ -32,6 +45,7 @@ class MoonIslandActions:
             print(f"MOON MONSTERS: {monster_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(x, y)
+            random_sleep()
             return True
 
         return False
@@ -45,6 +59,7 @@ class MoonIslandActions:
             print(f"MOON MONSTERS: {monster_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(x, y)
+            random_sleep()
             return True
 
         return False
@@ -61,6 +76,7 @@ class MoonIslandActions:
                 x + ADD_PIXELS["bamboo_left_monster_click"]["x"],
                 y + +ADD_PIXELS["bamboo_left_monster_click"]["y"],
             )
+            random_sleep()
             return True
 
         return False
@@ -74,6 +90,7 @@ class MoonIslandActions:
             print(f"MOON MONSTERS: {monster_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(x, y)
+            random_sleep()
             return True
 
         return False
@@ -90,6 +107,7 @@ class MoonIslandActions:
                 x + ADD_PIXELS["big_bamboo_1_and_2"]["x"],
                 y + ADD_PIXELS["big_bamboo_1_and_2"]["y"],
             )
+            random_sleep()
             return True
 
         return False
@@ -106,6 +124,7 @@ class MoonIslandActions:
                 x + ADD_PIXELS["big_bamboo_1_and_2"]["x"],
                 y + ADD_PIXELS["big_bamboo_1_and_2"]["y"],
             )
+            random_sleep()
             return True
 
         return False
@@ -118,23 +137,10 @@ class MoonIslandActions:
             rectangle = monster_detector.rectangles[:1]
             print(f"MOON MONSTERS: {monster_type.value} LOCALIZED")
             x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
-            bot.move_and_click(x, y)
-            return True
-
-        return False
-
-    @staticmethod
-    def small_bamboo_left_monster_click(bot):
-        monster_type = MoonIslandDetector.SMALL_BAMBOO_LEFT
-        monster_detector: Detection = bot.targets[BotModes.FIGHTING].get(monster_type)
-        if len(monster_detector.rectangles) > 0:
-            rectangle = monster_detector.rectangles[:1]
-            print(f"MOON MONSTERS: {monster_type.value} LOCALIZED")
-            x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
             bot.move_and_click(
-                x + ADD_PIXELS["small_bamboo_left_monster_click"]["x"],
-                y + ADD_PIXELS["small_bamboo_left_monster_click"]["y"],
+                x + ADD_PIXELS["turtle"]["x"], y + ADD_PIXELS["turtle"]["y"]
             )
+            random_sleep()
             return True
 
         return False
@@ -151,6 +157,7 @@ class MoonIslandActions:
                 x + ADD_PIXELS["coconut_monster_click"]["x"],
                 y + ADD_PIXELS["coconut_monster_click"]["y"],
             )
+            random_sleep()
             return True
 
         return False
