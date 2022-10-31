@@ -7,6 +7,7 @@ from utils import (
     CombatDetector,
     MoonIslandDetector,
     CharacterDetector,
+    MapDetector,
 )
 
 PLANTS = "./images/plants/"
@@ -56,6 +57,13 @@ SOUL_CAPTURE = "./images/character/skills/soul_capture.png"
 TREE_SKILL = "./images/character/skills/tree_skill.png"
 
 
+# Map
+PHOENIX_MAP = "./images/map/phoenix.png"
+WOMAN = "./images/map/woman.png"
+# Come back to desired map
+PHOENIX_COME_BACK = "./images/map/phoenix_back.png"
+WOMAN_COME_BACK = "./images/map/woman_back.png"
+
 THRESHOLDS = {
     "ACTIONS": {
         "ATTACK": 0.90,
@@ -71,6 +79,12 @@ THRESHOLDS = {
     "PLANTS": {"WHEAT": 0.40},
     "MONSTERS": {"ALL": 0.75},
     "CHARACTER": {"ARTWORK": 0.90, "SKILLS": 0.90, "AM_I_TREE": 0.75},
+    "MAP": {
+        "PHOENIX": 0.90,
+        "WOMAN": 0.90,
+        "PHOENIX_COME_BACK": 0.90,
+        "WOMAN_COME_BACK": 0.90,
+    },
 }
 
 
@@ -99,11 +113,22 @@ def initialize_fight_detectors():
     } | global_detectors
 
 
+def initialize_map_detectors():
+    """
+    MAP DETECTORS
+    """
+    return {
+        MapDetector.PHOENIX: MapDetectors.get_phoenix_map_detector(),
+        MapDetector.WOMAN: MapDetectors.get_woman_map_detector(),
+        MapDetector.PHOENIX_COME_BACK: MapDetectors.get_phoenix_back_detector(),
+        MapDetector.WOMAN_COME_BACK: MapDetectors.get_woman_back_detector(),
+    }
+
+
 def initialize_moon_island_mobs_detectors():
     """
     MOON INSLAND MOBS DETECTORS
     """
-    global_detectors = _initialize_global_detectors()
     return {
         # Mobs Detectors
         MoonIslandDetector.AMBUSH: MoonIslandMobsDetectors.ambush_detector(),
@@ -154,7 +179,7 @@ class GlobalDetectors:
             lookup_path=INVENTORY,
             threshold=THRESHOLDS["ACTIONS"]["INVENTORY"],
         )
-    
+
     # TODO Create separate detector class for this method
     @staticmethod
     def get_soul_up_detector():
@@ -369,4 +394,42 @@ class CharacterDetectors:
             image_detector=image_detector,
             lookup_path=TREE_SKILL,
             threshold=THRESHOLDS["CHARACTER"]["SKILLS"],
+        )
+
+
+class MapDetectors:
+    @staticmethod
+    def get_phoenix_map_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=PHOENIX_MAP,
+            threshold=THRESHOLDS["MAP"]["PHOENIX"],
+        )
+
+    @staticmethod
+    def get_woman_map_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=WOMAN,
+            threshold=THRESHOLDS["MAP"]["WOMAN"],
+        )
+
+    @staticmethod
+    def get_phoenix_back_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=PHOENIX_COME_BACK,
+            threshold=THRESHOLDS["MAP"]["PHOENIX_COME_BACK"],
+        )
+
+    @staticmethod
+    def get_woman_back_detector():
+        image_detector = ImageDetector()
+        return Detection(
+            image_detector=image_detector,
+            lookup_path=WOMAN_COME_BACK,
+            threshold=THRESHOLDS["MAP"]["WOMAN_COME_BACK"],
         )

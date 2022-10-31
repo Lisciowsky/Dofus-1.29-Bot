@@ -6,7 +6,11 @@ from detection import Detection
 from image_detector import ImageDetector
 from bot import DofusBot, BotModes
 
-from detectors import initialize_fight_detectors, initialize_moon_island_mobs_detectors
+from detectors import (
+    initialize_fight_detectors,
+    initialize_moon_island_mobs_detectors,
+    initialize_map_detectors,
+)
 
 # Third Party
 from mss import mss
@@ -18,7 +22,11 @@ sct = mss()
 bounding_box = {"top": 0, "left": 0, "width": 1680, "height": 1050}
 
 # Initialize Detectors
-fight_detectors = initialize_fight_detectors() | initialize_moon_island_mobs_detectors()
+fight_detectors = (
+    initialize_fight_detectors()
+    | initialize_moon_island_mobs_detectors()
+    | initialize_map_detectors()
+)
 for detector in fight_detectors.values():
     detector.start()
 

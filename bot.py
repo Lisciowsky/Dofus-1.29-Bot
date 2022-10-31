@@ -31,6 +31,7 @@ from bot_actions.fighting import FightingActions
 from bot_actions.moon_island import MoonIslandActions
 from bot_actions.sadida_fight_sequence import DMGSadidaFightActions
 from bot_actions.inventory_soul_equip import InventorySoulEquip
+from bot_actions.changing_map import MapComeBackActions
 
 
 class DofusBot:
@@ -62,7 +63,7 @@ class DofusBot:
     @staticmethod
     def move_and_click(x, y, double: bool = False):
         PyutilMixns.move(x, y, h_plus=0.0, w_plus=0.0, duration=0.3)
-        sleep(random.randint(20, 100) / 100)
+        sleep(random.randint(20, 50) / 100)
         PyutilMixns.click(x, y, h_plus=0.0, w_plus=0.0)
         if double:
             PyutilMixns.click(x, y, h_plus=0.0, w_plus=0.0)
@@ -192,6 +193,15 @@ class DofusBot:
 
         # Here we handle global pop up windows, that's why they run regardless of state.
         # TODO extract to separate method
+
+        # make sure we are on the right map
+        change_phoenix_map_success = MapComeBackActions.handle_phoenix_map(self)
+        if change_phoenix_map_success:
+            return
+        change_woman_map_success = MapComeBackActions.handle_woman_map(self)
+        if change_woman_map_success:
+            return
+
         lvl_up_success = BeforeEachRun.lvl_up(self)
         if lvl_up_success:
             self.state = BotState.SEARCHING

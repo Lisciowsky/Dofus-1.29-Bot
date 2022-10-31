@@ -9,7 +9,7 @@ from utils import MoonIslandDetector, BotState, BotModes
 ADD_PIXELS = {
     "bamboo_left_monster_click": {"x": 25.0, "y": 0.0},
     "coconut_monster_click": {"x": 25.0, "y": 0.0},
-    "big_bamboo_1_and_2": {"x": 20.0, "y": 0.0},
+    "big_bamboo_1_and_2": {"x": 35.0, "y": 10.0},
     "turtle": {"x": 10.0, "y": 0.0},
 }
 

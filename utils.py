@@ -15,6 +15,13 @@ class MoonIslandDetector(Enum):
     COCONUT = "COCONUT"
 
 
+class MapDetector(Enum):
+    PHOENIX = "PHOENIX"
+    WOMAN = "WOMAN"
+    PHOENIX_COME_BACK = "PHOENIX_COME_BACK"
+    WOMAN_COME_BACK = "WOMAN_COME_BACK"
+
+
 class CharacterDetector(Enum):
     TOOLTIP = "TOOLTIP"
     AM_I_TREE = "AM_I_TREE"
