@@ -19,3 +19,5 @@ Folders:
 
 - images - does contain images that we are looking up on our screen. They are imported in detectors.py, and are passed to each Detector class in init before threads run.
 - bot_actions - depending on whether a given lookup image was detected or not, we want to perform certain actions. This folder group bot actions depending on their context.
+
+![alt text](https://github.com/Lisciowsky/Dofus-1.29-Bot/blob/main/diagram.png?raw=true)
