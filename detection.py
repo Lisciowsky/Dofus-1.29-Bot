@@ -47,14 +47,19 @@ class Detection:
         self.stopped = False
 
     def run(self):
+        """
+        Run method, that detects rectangles given the:
+        - lookup_path to image we are interested to detect
+        - screenshot
+        - threshold to adjust the how strict we would like to perform the recognition.
+        (the higher the threshold the less results and vice versa)
+        """
         print(
             f"Running detector for: {self.lookup_path} with threashold: {self.threshold}"
         )
         while True:
             if not self.stopped:
                 if not self.screenshot is None and self.lookup_path:
-                    # do object detection
-                    # print(f"analyzing: {self.lookup_path.split('/')[-1]}")
                     rectangles, _ = self.image_detector.detect_rectangles(
                         self.screenshot,
                         file_path=self.lookup_path,

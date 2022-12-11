@@ -40,17 +40,16 @@ sleep(2)
 
 if __name__ == "__main__":
     while True:
-        # get an updated image of the game
+        # get an screenshot image of the game / screen
         sct_img = sct.grab(bounding_box)
         screenshot = np.array(sct_img)
         # updating the screenshot for detectors
         {
-            detector_enum: detector.update(screenshot=screenshot)
-            for detector_enum, detector in fight_detectors.items()
+            detector.update(screenshot=screenshot)
+            for detector in fight_detectors.values()
         }
         targets = {BotModes.FIGHTING: fight_detectors}
 
-        dofus_bot.update_screenshot(screenshot=screenshot)
         dofus_bot.update_targets(targets=targets)
         dofus_bot.update_detectors(detectors=fight_detectors)
 
@@ -61,4 +60,4 @@ if __name__ == "__main__":
             # Stopping threads
             (detector.stop() for detector in fight_detectors.values())
             dofus_bot.stop()
-            break
+            exit()

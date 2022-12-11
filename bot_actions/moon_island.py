@@ -3,7 +3,7 @@ import random
 from time import sleep
 
 # Local
-from utils import MoonIslandDetector, BotState, BotModes
+from utils import MoonIslandDetector, BotModes
 
 # adding pixels to X = "->>>" & adding pixels to Y = "UP"
 ADD_PIXELS = {

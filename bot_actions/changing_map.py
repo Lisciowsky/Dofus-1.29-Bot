@@ -5,6 +5,7 @@ import time
 from utils import BotModes, MapDetector
 
 # adding pixels to X = "->>>" & adding pixels to Y = "UP"
+# We are using add pixels for manual adjustment.
 ADD_PIXELS = {
     "handle_phoenix_map": {"x": 35.0, "y": 10.0},
     "handle_woman_map": {"x": 25.0, "y": 10.0},
@@ -27,7 +28,7 @@ class MapComeBackActions:
                 rectangle = map_back_detector.rectangles[:1]
                 x, y = bot._get_x_y_from_rectangle(rectangle=rectangle)
                 bot.move_and_click(
-                    x + ADD_PIXELS["handle_phoenix_map"]["x"],
+                    x + ADD_PIXELS["handle_phoenix_map"]["x"], # We are using add pixels for manual adjustment.
                     y + ADD_PIXELS["handle_phoenix_map"]["y"],
                 )
                 return True

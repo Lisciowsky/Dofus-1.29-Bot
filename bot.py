@@ -192,8 +192,6 @@ class DofusBot:
         sleep(0.5)
 
         # Here we handle global pop up windows, that's why they run regardless of state.
-        # TODO extract to separate method
-
         # make sure we are on the right map
         change_phoenix_map_success = MapComeBackActions.handle_phoenix_map(self)
         if change_phoenix_map_success:
@@ -221,7 +219,6 @@ class DofusBot:
         # Here we handle global pop up windows, that's why they run regardless of state.
 
         if self.state == BotState.FIGHTING:
-
             print("Fighting ...")
             # Activating combat detectors
             self._pause_or_active_detectors(
@@ -291,11 +288,6 @@ class DofusBot:
 
     def update_detectors(self, detectors: dict):
         self.detectors = detectors
-
-    def update_screenshot(self, screenshot):
-        self.lock.acquire()
-        self.screenshot = screenshot
-        self.lock.release()
 
     def start(self):
         self.stopped = False

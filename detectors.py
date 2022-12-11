@@ -90,8 +90,10 @@ THRESHOLDS = {
 
 def _initialize_global_detectors():
     """
-    GLOBAL DETECTORS, ATTACHED AS DEFAULT
+    GLOBAL DETECTORS, Should be included for every bot mode.
     """
+    # XXX Sould and Inventory dectectors should be probably moved from here to other
+    # category
     return {
         GlobalDetector.CLOSE_FIGHT: GlobalDetectors.get_close_fight_detector(),
         GlobalDetector.LVL_UP: GlobalDetectors.get_lvl_up_detector(),
@@ -102,7 +104,7 @@ def _initialize_global_detectors():
 
 def initialize_fight_detectors():
     """
-    COMBAT DETECTORS
+    FIGHT DETECTORS -> All the detectors required for Fight bot mode to work. 
     """
     global_detectors = _initialize_global_detectors()
     return {
@@ -115,7 +117,8 @@ def initialize_fight_detectors():
 
 def initialize_map_detectors():
     """
-    MAP DETECTORS
+    MAP DETECTORS -> Maps to detect, and navigator icons to click & come back
+    to the main map if we detect we are on the wrong one.
     """
     return {
         MapDetector.PHOENIX: MapDetectors.get_phoenix_map_detector(),
@@ -127,7 +130,7 @@ def initialize_map_detectors():
 
 def initialize_moon_island_mobs_detectors():
     """
-    MOON INSLAND MOBS DETECTORS
+    MOON INSLAND MOBS DETECTORS -> All of the monsters to detect.
     """
     return {
         # Mobs Detectors
@@ -152,6 +155,13 @@ def initialize_moon_island_mobs_detectors():
 
 
 class GlobalDetectors:
+    """
+    The detectors that should be available regardless of the bot mode, since
+    under all circumstances we will need them.
+    """
+    # XXX One could argue inventory and soul detectors should not be included here, 
+    # that's right they probably should be moved to character detector or other place.
+
     @staticmethod
     def get_close_fight_detector():
         image_detector = ImageDetector()
@@ -192,6 +202,11 @@ class GlobalDetectors:
 
 
 class FarmDetectors:
+    """
+    Farm detectors not used in this example.
+    We can use them in the future to introduce another bot.mode like "farming"
+    And handle cutting wheat for example. :)
+    """
     @staticmethod
     def get_wheat_detector():
         image_detector = ImageDetector()
@@ -212,6 +227,11 @@ class FarmDetectors:
 
 
 class FightDetectors:
+    """
+    Fight detectors are localizing all of the images like closing the fight,
+    accepting the fight (confirming fight after clicking on the monster), localizing
+    pause button and so on.
+    """
     @staticmethod
     def am_i_in_fight_detector():
         image_detector = ImageDetector()
@@ -250,6 +270,11 @@ class FightDetectors:
 
 
 class MoonIslandMobsDetectors:
+    """
+    All of the detectors that aim to localize monsters on the map.
+    In this particular example we are interested in monsters that can be found
+    on the MoonIsland.
+    """
     @staticmethod
     def ambush_detector():
         image_detector = ImageDetector()
@@ -333,6 +358,12 @@ class MoonIslandMobsDetectors:
 
 
 class CharacterDetectors:
+    """
+    Character detectors encapsualate detector that deal with:
+    - localizing and casting skills
+    - evaluating characters state. (am I tree) Sadi special skill to turn into tree.
+    -> If "I am a tree" then we will be pausing turn. 
+    """
     @staticmethod
     def artwork_detector():
         image_detector = ImageDetector()
@@ -398,6 +429,15 @@ class CharacterDetectors:
 
 
 class MapDetectors:
+    """
+    Sometimes accidentaly our bot can go outside the map that we want him to be.
+    Therefore we need to check for specific visual indicators, that will inform us
+    if the bot went outside of our map, we want him to come back.
+
+    We have 2 detectors per one scenario:
+     1) We indentify we are on the wrong map
+     2) We localize return navigator and click on it to get back to the main map.
+    """
     @staticmethod
     def get_phoenix_map_detector():
         image_detector = ImageDetector()

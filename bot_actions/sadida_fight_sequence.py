@@ -3,11 +3,7 @@ import random
 from time import sleep
 
 # Local
-from utils import BotModes, BotState, CharacterDetector
-
-# Third Party
-import pyautogui
-
+from utils import BotModes, CharacterDetector
 
 class DMGSadidaFightActions:
     @staticmethod
